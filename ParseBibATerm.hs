@@ -20,16 +20,8 @@ import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy as T
 
 -- cco ATerm datatype.
--- import CCO.Tree
-
-data ATerm = Integer Integer
-           | Float Double
-           | String String
-           | App String [ATerm]
-           | Tuple [ATerm]
-           | List [ATerm]
-           | Ann ATerm [ATerm]
-             deriving Show
+import CCO.Tree (ATerm (..))
+import CCO.Printing
 
 -- Convert a list of entries to an appropriate ATerm representation.
 bib2ATerm :: [BibEntry] -> ATerm
@@ -40,9 +32,13 @@ bib2ATerm = List . map doEntry
                                 List [App key [String val] | (key,val) <- keyValues entry]
                               ]
                                
+-- Pretty-prints an ATerm. Tries to keep the width below 80 so it is easy to read.
+printATerm :: ATerm -> Text
+printATerm = T.pack . render_ 80 . pp 
+							   
 -- Main operation
 parse_bib :: ProgramOperation
-parse_bib input = parseBibFile input >>= return . T.pack . show . bib2ATerm
+parse_bib input = parseBibFile input >>= return . printATerm . bib2ATerm
 
 main :: IO ()
 main = makeMain parse_bib
