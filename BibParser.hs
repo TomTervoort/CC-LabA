@@ -144,8 +144,21 @@ pStringLiteral = (`label` "string literal") $ eatQuotes $ many litUnit
 -- common in Dutch.
 specialChars :: Map String Char
 specialChars = M.fromList [
-                            ("\"o", 'ö')
-                            -- TODO
+                            ("\"a", 'ä'),
+                            ("\"e", 'ë'),
+                            ("\"o", 'ö'),
+                            ("\"u", 'ü'),
+                            ("\"i", 'ï'),
+                            ("\'a", 'á'),
+                            ("\'e", 'é'),
+                            ("\'o", 'ó'),
+                            ("\'u", 'ú'),
+                            ("\'i", 'í'),
+                            ("`a", 'à'),
+                            ("`e", 'è'),
+                            ("`o", 'ò'),
+                            ("`u", 'ù'),
+                            ("`i", 'ì')
                           ]
 
 -- Tests BParser with file test.bib.
