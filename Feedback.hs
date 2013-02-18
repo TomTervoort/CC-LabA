@@ -5,9 +5,11 @@
 module Feedback where 
 
 import Control.Monad
+import Control.Arrow
 import Data.List
 import Data.Maybe
 import Debug.Trace
+import Data.Foldable (toList)
 
 import Data.Sequence (Seq, (<|), (|>), (><))
 import qualified Data.Sequence as S
@@ -49,6 +51,17 @@ instance Monad Feedback where
 hasError :: Feedback a -> Bool
 hasError f = not $ S.null $ errors f
 
+-- Runs the feedback computation and returns the result value (if any) and the message to print.
+runFeedback :: Feedback a -> (Maybe a, String)
+runFeedback f = (value f, printFeedback f)
+
 -- Returns printed error and warning messages. If none, "" is returned.
 printFeedback :: Feedback a -> String
-printFeedback f = show $ liftM (const ()) f -- TODO
+printFeedback f = printWarnings (warnings f) ++ "\n"
+                   ++ case value f of
+                       Nothing -> let nonfatal S.:> fatal = S.viewr $ errors f
+                                   in printErrors nonfatal ++ "\n" ++ printFatal fatal
+                       Just _  -> printErrors $ errors f
+ where printErrors = toList >>> map ("Error: \n  " ++) >>> intersperse "\n\n" >>> concat
+       printWarnings = toList >>> map ("Warning: \n  " ++) >>> intersperse "\n\n" >>> concat
+       printFatal f = "Fatal error: \n  " ++ f

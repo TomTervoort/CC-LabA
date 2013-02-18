@@ -12,6 +12,7 @@ import Data.Maybe
 import System.IO
 import Debug.Trace
 import System.Environment
+import System.Exit
 
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
@@ -31,5 +32,13 @@ makeMain op = do args <- getArgs
                            []     -> B.getContents
                            [path] -> B.readFile path
                  let feedback = op input
-                 hPutStrLn stderr $ printFeedback feedback
-                 when (not $ hasError feedback) $ TIO.putStrLn $ fromJust $ value feedback
+                 case runFeedback feedback of
+                  (Just text, msg) | not $ hasError feedback -> 
+                                        do -- Dump warnings, if any.
+                                           when (msg /= "") $ hPutStrLn stderr msg
+                                           -- Print output.
+                                           TIO.putStrLn text
+                  (_, msg)           -> do -- Compilation failed. Print errors/warnings.
+                                           hPutStrLn stderr msg
+                                           -- Terminate with an exit code indicating failure.
+                                           exitFailure

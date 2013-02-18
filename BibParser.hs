@@ -172,3 +172,4 @@ parseBibFile input = case parse pBib "" input of
                       Left  errors -> do forM (errorMessages errors) $ errorF . messageString
                                          fatalF "Unable to parse BibTeX input."
                       Right result -> return result
+                      
