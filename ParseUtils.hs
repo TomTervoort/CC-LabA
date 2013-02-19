@@ -3,6 +3,8 @@
 -- General helper functions for Parsec parsers.
 module ParseUtils where
 
+import Feedback
+
 import Control.Monad
 import Data.List
 import Data.Maybe
@@ -11,7 +13,8 @@ import Debug.Trace
 import Data.Functor.Identity
 
 -- parsec3
-import Text.Parsec
+import Text.Parsec hiding (runParser)
+import Text.Parsec.Error
 
 -- Sequences monads but returns left result. Useful while parsing.
 infixl 1 <<
@@ -42,3 +45,17 @@ ws l = whitespace >> l << whitespace
 whitespace :: Stream s Identity Char => Parsec s () ()
 whitespace = skipMany (void space <|> void comment)
  where comment = char '%' >> skipMany (notChar '\n') >> char '\n'
+ 
+-- Uses the Prelude read function and calls the monadic 'fail' if parsing failed.
+readM :: (Monad m, Read a) => String -> m a
+readM str = case reads str of
+             [(x, "")] -> return x
+             _         -> fail "Prelude.read"
+             
+-- Runs a Parsec parser on an input in the Feedback monad. The third argument is a final fatal 
+-- error message that should be given in case of failure.
+runParser :: Stream s Identity Char => Parsec s () a -> String -> s -> Feedback a
+runParser p error input = case parse p "" input of
+                           Left  errors -> do forM (errorMessages errors) $ errorF . messageString
+                                              fatalF error
+                           Right result -> return result

@@ -24,8 +24,7 @@ import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
 
 -- parsec3
-import Text.Parsec
-import Text.Parsec.Error
+import Text.Parsec hiding (runParser)
 import Text.Parsec.ByteString.Lazy
 
 -------------------------------------------------------
@@ -139,8 +138,5 @@ runTest = do input <- B.readFile "test.bib"
              
 -- Gets a BibTeX file as a lazy Bytestring and tries parsing it.
 parseBibFile :: ByteString -> Feedback [BibEntry]
-parseBibFile input = case parse pBib "" input of
-                      Left  errors -> do forM (errorMessages errors) $ errorF . messageString
-                                         fatalF "Unable to parse BibTeX input."
-                      Right result -> return result
+parseBibFile = runParser pBib "Unable to parse BibTeX input."
                       
