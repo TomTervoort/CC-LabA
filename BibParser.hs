@@ -10,6 +10,7 @@
 module BibParser (parseBibFile, Identifier, BibEntry (..)) where
 
 import Feedback
+import ParseUtils
 
 import Control.Monad
 import Data.List
@@ -43,36 +44,6 @@ data BibEntry = BibEntry {
 -- that treats input as being encoded as 'char8' (a superset of ASCII) can be used. This is more
 -- efficient than a parser consuming a standard String or UTF-16 Text.
 type BParser a = Text.Parsec.ByteString.Lazy.Parser a
-
--- Sequences monads but returns left result. Useful while parsing.
-infixl 1 <<
-(<<) :: Monad m => m a -> m b -> m a
-a << b = do x <- a
-            b
-            return x
-
--- Parses any character not equal to the argument.
-notChar :: Char -> BParser Char
-notChar c = satisfy (/= c)
-
--- Similar to 'many', except that every but the last element should be followed by a comma.
-commaList :: BParser a -> BParser [a]
-commaList l = option [] $ liftM2 (:) l 
-                        $ many (char ',' >> l)
-
--- Combinator that greedily parses any whitespace and comments in front and after the object to be 
--- parsed. If backtracking is needed, it is recommended to apply 'try' to a parser before ws.
--- Comments start with a %-sign and end with a newline.
--- The parser given as an argument should not expect a (non-optional) '%' or whitespace character 
--- as the first character of the object to be parsed.
--- 'ws (ws x)' is equivalent to 'ws x' and can be safely used.
-ws :: BParser a -> BParser a
-ws l = whitespace >> l << whitespace
-
--- Whitespace eater used by ws.
-whitespace :: BParser ()
-whitespace = skipMany (void space <|> void comment)
- where comment = char '%' >> skipMany (notChar '\n') >> char '\n'
 
 -- Full parser that can be applied to a complete BibTeX file.
 pBib :: BParser [BibEntry]

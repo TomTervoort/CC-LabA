@@ -20,7 +20,7 @@ import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy as T
 import Data.Text.Lazy.Encoding
 
--- cco ATerm datatype.
+-- cco
 import CCO.Tree (ATerm (..))
 import CCO.Printing
 
