@@ -56,6 +56,6 @@ readM str = case reads str of
 -- error message that should be given in case of failure.
 runParser :: Stream s Identity Char => Parsec s () a -> String -> s -> Feedback a
 runParser p error input = case parse p "" input of
-                           Left  errors -> do forM (errorMessages errors) $ errorF . messageString
-                                              fatalF error
+                           Left  errors -> do -- forM (errorMessages errors) $ errorF . messageString
+                                              fatalF $ error ++ ": \n" ++ show errors
                            Right result -> return result

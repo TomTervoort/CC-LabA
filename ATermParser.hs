@@ -1,7 +1,7 @@
 {-# LANGUAGE Haskell2010 #-}
 
 -- Parser for an ATerm tree.
-module ATermParser (parseATerm) where
+module ATermParser (parseATerm, parseATermUtf8) where
 
 import ParseUtils
 import Feedback
@@ -9,6 +9,7 @@ import Feedback
 import Control.Monad
 import Data.List
 import Data.Maybe
+import Data.Char
 import System.IO
 import Debug.Trace
 
@@ -65,9 +66,9 @@ pBasicTerm = choice [pList, pTuple, pString, pNum, pApp]
                           readM (dec1 ++ "." ++ dec2) >>= return . Float
                   else readM dec1 >>= return . Integer
        pApp = do -- Constructor application. 
-                 -- Assume constructor names solely consist of alphabetical ASCII characters.
-                 let alphaChar c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                 ctor <- many1 $ satisfy alphaChar
+                 -- Constructor names should match [A-Za-z0-9]+.
+                 let alphaNumChar c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || isDigit c
+                 ctor <- many1 $ satisfy alphaNumChar
                  ws $ char '('
                  args <- commaList pATerm
                  char ')'
@@ -79,7 +80,7 @@ parseATerm :: Text -> Feedback ATerm
 parseATerm = runParser pATerm "Invalid ATerm tree."
 
 -- Run the parser over a UTF-8 encoded lazy ByteString.
-parseATermUTF8 :: ByteString -> Feedback ATerm
-parseATermUTF8 inp = case decodeUtf8' inp of
+parseATermUtf8 :: ByteString -> Feedback ATerm
+parseATermUtf8 inp = case decodeUtf8' inp of
                       Left  err  -> fatalF $ show err
                       Right text -> parseATerm text

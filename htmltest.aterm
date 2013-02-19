@@ -1,0 +1,12 @@
+HTML ( [
+    HEAD ( [
+        TITLE ( ["Pagina titel"] )
+    ] ),
+    BODY ( [
+        H1 ( ["Hoofdstuk 1"] ),
+        P ( ["Dit is een paragraaf. Dit is een ",
+            A ( ["link"] ) { href("http://www.google.nl/") }
+        ] ),
+        B ( ["Dikgedrukt"] )
+    ] )
+] )
