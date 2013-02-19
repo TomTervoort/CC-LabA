@@ -16,13 +16,12 @@ import System.Exit
 
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
-import Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy.IO as TIO
 
--- The actions performed by each executable can be characterised by this type: input is read from
--- some handle and the resulting output is returned within a lazy ByteString containing ASCII text, 
--- along with feedback.
-type ProgramOperation = ByteString -> Feedback Text
+
+-- The actions performed by each executable can be characterised by this type: a sequence of bytes 
+-- (containing text encoded in either ASCII or UTF-8) is read from stdin or a file and transformed 
+-- into another byte sequence that is to be send to standard out. The Bytestring are lazy.
+type ProgramOperation = ByteString -> Feedback ByteString
 
 -- Creates a 'main' function from a ProgramOperation.
 makeMain :: ProgramOperation -> IO ()
@@ -33,11 +32,11 @@ makeMain op = do args <- getArgs
                            [path] -> B.readFile path
                  let feedback = op input
                  case runFeedback feedback of
-                  (Just text, msg) | not $ hasError feedback -> 
+                  (Just outp, msg) | not $ hasError feedback -> 
                                         do -- Dump warnings, if any.
                                            when (msg /= "") $ hPutStrLn stderr msg
                                            -- Print output.
-                                           TIO.putStrLn text
+                                           B.putStr outp
                   (_, msg)           -> do -- Compilation failed. Print errors/warnings.
                                            hPutStrLn stderr msg
                                            -- Terminate with an exit code indicating failure.

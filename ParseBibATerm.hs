@@ -18,6 +18,7 @@ import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
 import Data.Text.Lazy (Text)
 import qualified Data.Text.Lazy as T
+import Data.Text.Lazy.Encoding
 
 -- cco ATerm datatype.
 import CCO.Tree (ATerm (..))
@@ -36,9 +37,9 @@ bib2ATerm = List . map doEntry
 printATerm :: ATerm -> Text
 printATerm = T.pack . render_ 80 . pp 
 							   
--- Main operation
+-- Main operation. Text output in UTF-8.
 parse_bib :: ProgramOperation
-parse_bib input = parseBibFile input >>= return . printATerm . bib2ATerm
+parse_bib input = parseBibFile input >>= return . encodeUtf8 . printATerm . bib2ATerm
 
 main :: IO ()
 main = makeMain parse_bib
