@@ -38,14 +38,15 @@ ppHTML (String txt) = return $ text $ htmlEscape txt
 ppHTML term = errorF ("Can not convert to HTML: '" ++ show term ++ "'.") >> return empty
 
 openTag :: String -> [Doc] -> Doc
-openTag tag atts = char '<' <> text (map toLower tag) <> hsep atts <> char '>'
+openTag tag []   = char '<' <> text (map toLower tag) <> char '>'
+openTag tag atts = char '<' <> text (map toLower tag) <+> hsep atts <> char '>'
 
 closeTag :: String -> Doc
-closeTag tag = char '<' <> text (map toLower tag) <> text "/>"
+closeTag tag = text "</" <> text (map toLower tag) <> char '>'
 
 -- Pretty prints a tag attribute.
 ppAttribute :: ATerm -> Feedback Doc
-ppAttribute (App key [String val]) = return $ text key <+> char '=' <+> text (htmlEscape val)
+ppAttribute (App key [String val]) = return $ text key <> text "=\"" <> text (htmlEscape val) <> char '"'
 ppAttribute t = errorF ("Invalid attribute: '" ++ show t ++ "'.") >> return empty
 
 -- Replaces all special characters (control characters, non-ASCII characters, characters that 
