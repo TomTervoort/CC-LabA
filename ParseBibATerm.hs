@@ -33,7 +33,11 @@ bib2ATerm = List . map doEntry
                                 App "Key" [String $ citeKey entry],
                                 List [App key [String val] | (key,val) <- keyValues entry]
                               ]
-							   
+			
+-- Pretty-prints an ATerm. Tries to keep the width below 80 so it is easy to read.
+printATerm :: ATerm -> Text
+printATerm = T.pack . render_ 80 . pp 
+
 -- Main operation. Text output in UTF-8 (ASCII, really).
 parse_bib :: ProgramOperation
 parse_bib input = parseBibFile input >>= return . encodeUtf8 . printATerm . bib2ATerm

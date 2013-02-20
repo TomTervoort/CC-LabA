@@ -2,7 +2,7 @@
 
 -- Parser for an ATerm tree.
 
-module ATermParser (parseATerm, printATerm) where
+module ATermParser (parseATerm) where
 
 import ParseUtils
 import Feedback
@@ -77,7 +77,3 @@ pBasicTerm = choice [pList, pTuple, pString, pNum, pApp]
 -- Parse an ASCII-encoded ATerm string within the feedback monad.
 parseATerm :: ByteString -> Feedback ATerm
 parseATerm = runParser pATerm "Invalid ATerm tree."
-
--- Pretty-prints an ATerm. Tries to keep the width below 80 so it is easy to read.
-printATerm :: ATerm -> Text
-printATerm = T.pack . render_ 80 . pp 
