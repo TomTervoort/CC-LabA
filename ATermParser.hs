@@ -1,11 +1,8 @@
 {-# LANGUAGE Haskell2010 #-}
 
 -- Parser for an ATerm tree.
-<<<<<<< HEAD
-module ATermParser (parseATerm, parseATermUtf8, printATerm) where
-=======
-module ATermParser (parseATerm) where
->>>>>>> 6a24c71a351424261061645b528011b3fe4d226a
+
+module ATermParser (parseATerm, printATerm) where
 
 import ParseUtils
 import Feedback
@@ -80,12 +77,6 @@ pBasicTerm = choice [pList, pTuple, pString, pNum, pApp]
 -- Parse an ASCII-encoded ATerm string within the feedback monad.
 parseATerm :: ByteString -> Feedback ATerm
 parseATerm = runParser pATerm "Invalid ATerm tree."
-
--- Run the parser over a UTF-8 encoded lazy ByteString.
-parseATermUtf8 :: ByteString -> Feedback ATerm
-parseATermUtf8 inp = case decodeUtf8' inp of
-                      Left  err  -> fatalF $ show err
-                      Right text -> parseATerm text
 
 -- Pretty-prints an ATerm. Tries to keep the width below 80 so it is easy to read.
 printATerm :: ATerm -> Text
