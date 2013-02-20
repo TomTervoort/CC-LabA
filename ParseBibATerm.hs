@@ -34,7 +34,7 @@ bib2ATerm = List . map doEntry
                                 List [App key [String val] | (key,val) <- keyValues entry]
                               ]
 							   
--- Main operation. Text output in UTF-8.
+-- Main operation. Text output in UTF-8 (ASCII, really).
 parse_bib :: ProgramOperation
 parse_bib input = parseBibFile input >>= return . encodeUtf8 . printATerm . bib2ATerm
 

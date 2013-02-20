@@ -1,7 +1,11 @@
 {-# LANGUAGE Haskell2010 #-}
 
 -- Parser for an ATerm tree.
+<<<<<<< HEAD
 module ATermParser (parseATerm, parseATermUtf8, printATerm) where
+=======
+module ATermParser (parseATerm) where
+>>>>>>> 6a24c71a351424261061645b528011b3fe4d226a
 
 import ParseUtils
 import Feedback
@@ -15,13 +19,12 @@ import Debug.Trace
 
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
-import Data.Text.Lazy (Text)
-import qualified Data.Text.Lazy as T
-import Data.Text.Lazy.Encoding
 
 -- parsec3
 import Text.Parsec hiding (runParser)
-import Text.Parsec.Text.Lazy (Parser) -- Use laxy Text as parser input type.
+
+-- Since ATerm trees are encoded in ASCII, we can use the lazy ByteString parser.
+import Text.Parsec.ByteString.Lazy (Parser) 
 
 -- cco
 import CCO.Tree (ATerm (..))
@@ -74,9 +77,8 @@ pBasicTerm = choice [pList, pTuple, pString, pNum, pApp]
                  char ')'
                  return $ App ctor args
                  
--- Parse an ATerm string (in a lazy text container, not a Bytestring since non-ASCII characters
--- may be present) in the feedback monad.
-parseATerm :: Text -> Feedback ATerm
+-- Parse an ASCII-encoded ATerm string within the feedback monad.
+parseATerm :: ByteString -> Feedback ATerm
 parseATerm = runParser pATerm "Invalid ATerm tree."
 
 -- Run the parser over a UTF-8 encoded lazy ByteString.
