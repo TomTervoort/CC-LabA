@@ -59,7 +59,7 @@ htmlEscape = concatMap escapeChar
 -- The printing as a ProgramOperation.
 -- Assume default page style.
 printHTML :: ProgramOperation
-printHTML inp = do aterm <- parseATermUtf8 inp
+printHTML inp = do aterm <- parseATerm inp
                    doc   <- ppHTML aterm
                    return $ encodeUtf8 $ T.pack $ (++ "\n") $ render doc
                    

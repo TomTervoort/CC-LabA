@@ -37,7 +37,7 @@ bib2ATerm = List . map doEntry
 printATerm :: ATerm -> Text
 printATerm = T.pack . render_ 80 . pp 
 							   
--- Main operation. Text output in UTF-8.
+-- Main operation. Text output in UTF-8 (ASCII, really).
 parse_bib :: ProgramOperation
 parse_bib input = parseBibFile input >>= return . encodeUtf8 . printATerm . bib2ATerm
 
