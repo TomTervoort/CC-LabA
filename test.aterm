@@ -1,0 +1,42 @@
+HTML(
+  [ HEAD([TITLE(["Bibliography"])])
+  , BODY(
+      [ A(["[LCJ03]"]){href("loeh03dependency")}
+      , " | "
+      , A(["[P02]"]){href("pierce02types")}
+      , ""
+      , HR([])
+      , TABLE(
+          [ TR(
+              [ TD([A(["[LCJ03]"]){name("loeh03dependency")}])
+              , TD(
+                  [ "L\246h, Andres and Clarke, Dave and Jeuring, Johan"
+                  , "."
+                  , "Dependency-style Generic Haskell"
+                  , "."
+                  , " In: "
+                  , "Runciman, Colin and Shivers, Olin"
+                  , ", editors, "
+                  , EM(["Proceedings of the Eighth ACM SIGPLAN International Conference on Functional Programming, ICFP 2003, Uppsala, Sweden, August 25--29, 2003"])
+                  , ", pages "
+                  , "141--152"
+                  , ". "
+                  , "ACM Press"
+                  , ", "
+                  , "2003"
+                  , "."
+                  ]
+                )
+              ]
+            ){valign("top")}
+          , TR(
+              [ TD([A(["[P02]"]){name("pierce02types")}])
+              , TD(["Pierce, Benjamin C.", ".", EM(["Types and Programming Languages", "."]), "The MIT Press", ", ", "Cambridge, Massachusetts", ", ", "2002", "."])
+              ]
+            ){valign("top")}
+          ]
+        ){border("0")}
+      ]
+    )
+  ]
+)

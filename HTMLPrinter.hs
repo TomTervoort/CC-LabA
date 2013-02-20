@@ -31,11 +31,19 @@ import Text.PrettyPrint
 ppHTML :: ATerm -> Feedback Doc
 ppHTML (Ann (App tag [List children]) atts) = 
  do attDocs <- forM atts ppAttribute
-    childDocs <- forM children ppHTML
+    childDocs <- forM (concatStrings children) ppHTML
     return $ openTag tag attDocs $+$ nest 4 (vcat childDocs) $+$ closeTag tag
 ppHTML c@(App _ _) = ppHTML $ Ann c []
 ppHTML (String txt) = return $ text $ htmlEscape txt
 ppHTML term = errorF ("Can not convert to HTML: '" ++ show term ++ "'.") >> return empty
+
+-- Concatenate all adiencent ATerms within the list that are String literals. This prevents newlines from being 
+-- introduced when strings follow each other up.
+concatStrings :: [ATerm] -> [ATerm]
+concatStrings [] = []
+concatStrings (String a : String b : xs) = concatStrings $ String (a ++ b) : xs
+concatStrings (x:xs) = x : concatStrings xs
+
 
 openTag :: String -> [Doc] -> Doc
 openTag tag []   = char '<' <> text (map toLower tag) <> char '>'
